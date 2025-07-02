@@ -1,7 +1,18 @@
 [project]
 name = "aldi-lidl-distance"
 version = "0.1.0"
-description = "Add your description here"
+description = "A quick project to answer the question of what the maximal distance between and Aldi and Lidl shop in the whole of Germany is."
 readme = "README.md"
-requires-python = ">=3.9"
-dependencies = []
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "ipython>=9.4.0",
+    "jupyter>=1.1.1",
+    "requests>=2.32.4",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+    "ruff>=0.12.1",
+]
