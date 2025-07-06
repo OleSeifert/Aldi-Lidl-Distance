@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 """Extraction of the store addresses of the ALDI Sued stores."""
 
+import csv
+import logging
 import time
+from pathlib import Path
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from rich import print
+from tqdm import tqdm
 
 # **************** Constants ****************
 
 ALDI_SUED_URLS = "../../data/cleaned_aldi_store_urls.txt"
 HEADERS = {"User-Agent": "hobby-aldi-scraper/0.1"}
+PATH_TMP = Path("../../data/aldi_sued_addresses_tmp.csv")
 
 session = requests.Session()
 session.headers.update(HEADERS)
@@ -33,6 +37,21 @@ def read_urls(path: str) -> list[str]:
         lines = [line.strip() for line in lines]
 
     return lines
+
+
+def append_to_csv(row: dict[str, str], path: Path) -> None:
+    """Appends a row (store data) to a csv file.
+
+    Args:
+        row: The row (address) data to append.
+        path: The path to the csv file.
+    """
+    first_write = not path.exists()
+    with path.open("a", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=row.keys())
+        if first_write:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def get_soup(url: str) -> BeautifulSoup:
@@ -94,21 +113,31 @@ def parse_store(store_url: str) -> dict[str, str]:
 
 def main() -> None:
     """Runs the code."""
-    urls = read_urls(ALDI_SUED_URLS)
+    # Setup logger
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)s: %(message)s",
+    )
 
+    urls = read_urls(ALDI_SUED_URLS)
     addresses: list[dict[str, str]] = []
 
-    for url in urls:
+    logging.info("Start crawling the addresses.")
+
+    # Fetch each address append it to the tmp csv and add them
+    for url in tqdm(urls, desc="crawl stores"):
         address = parse_store(url)
+        append_to_csv(address, PATH_TMP)
         addresses.append(address)
-        time.sleep(0.75)
+        time.sleep(0.75)  # Polite pause for the request
 
+    logging.info("Successfully crawled all store addresses.")
+
+    # Create dataframe and store it as both csv and parquet
     df = pd.DataFrame(addresses)
-    print(df)
-
-    # Save code to a csv
     df.to_parquet("../../data/aldi_sued.parquet")
     df.to_csv("../../data/aldi_sued.csv")
+    logging.info("Stored the results as parquet and csv files.")
 
 
 if __name__ == "__main__":
