@@ -13,12 +13,14 @@ from tqdm import tqdm
 
 # **************** Constants ****************
 
-ALDI_SUED_URLS = "../../data/cleaned_aldi_store_urls.txt"
+ALDI_SUED_URLS = "../../data/raw/aldi_sued/cleaned_aldi_sued_store_urls.txt"
 HEADERS = {"User-Agent": "hobby-aldi-scraper/0.1"}
-PATH_TMP = Path("../../data/aldi_sued_addresses_tmp.csv")
+PATH_TMP = Path("../../data/raw/aldi_sued/aldi_sued_addresses_tmp.csv")
 
 session = requests.Session()
 session.headers.update(HEADERS)
+
+# **************** Helper functions ****************
 
 
 def read_urls(path: str) -> list[str]:
@@ -111,6 +113,9 @@ def parse_store(store_url: str) -> dict[str, str]:
     }
 
 
+# **************** Main ****************
+
+
 def main() -> None:
     """Runs the code."""
     # Setup logger
@@ -129,7 +134,7 @@ def main() -> None:
         address = parse_store(url)
         append_to_csv(address, PATH_TMP)
         addresses.append(address)
-        time.sleep(0.75)  # Polite pause for the request
+        time.sleep(1.2)  # Polite pause for the request
 
     logging.info("Successfully crawled all store addresses.")
 
