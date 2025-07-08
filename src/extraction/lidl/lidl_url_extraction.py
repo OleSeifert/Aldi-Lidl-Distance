@@ -2,6 +2,7 @@
 """Extract the URLs for the different LIDL stores."""
 
 import logging
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,6 +14,8 @@ from tqdm import tqdm
 BASE_URL = "https://www.lidl.de"
 FILIAL_SEARCH_URL = f"{BASE_URL}/f/"
 PATH_LIDL_FILIALEN_URLS = "../../../data/raw/lidl/lidl_filialen_urls.txt"
+PATH_BING_LINKS = "../../../data/raw/lidl/lidl_bing_links.txt"
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -56,7 +59,78 @@ def extract_and_save_city_urls(
         print("Successfully extracted and saved all city URLs.")
 
 
-# TODO: Continue here. Extract these links and make sure they work. From these I can parse all needed information. Write regexes for them
+def extract_bing_links_for_city(city_url: str) -> list[str]:
+    """Extracts the Bing Address Links for one city.
+
+    Args:
+        city_url: The city URL.
+
+    Returns:
+        A list of Bing links for this city.
+    """
+    res = requests.get(city_url, timeout=15)
+    soup = BeautifulSoup(res.text, "html.parser")
+    # Get all relevant elements
+    rel_elems = soup.find_all("a", class_="ret-o-store-detail__store-icon-link")
+    # filter list
+    filtered_elems = [
+        el
+        for el in rel_elems
+        if hasattr(el, "href") and el["href".startswith("https://www.bing")]
+    ]
+    # get the links
+    links: list[str] = [el["href"] for el in filtered_elems]
+    return links
+
+
+def get_city_urls(path: str = PATH_LIDL_FILIALEN_URLS) -> list[str]:
+    """Reads the city URLs file.
+
+    Args:
+        path (optional): The path to the file. Defaults to PATH_LIDL_FILIALEN_URLS
+
+    Returns:
+        A list of city URLs.
+    """
+    # read file
+    with open(path, "r", encoding="utf-8") as file:
+        lines = [line.strip() for line in file.readlines()]
+    return lines
+
+
+def fetch_and_save_all_bing_links(
+    path: str = PATH_LIDL_FILIALEN_URLS, path_to_save: str = PATH_BING_LINKS
+) -> None:
+    """Fetches and saves all Bing links for all cities.
+
+    Args:
+        path (optional): Path to City URLs. Defaults to PATH_LIDL_FILIALEN_URLS.
+        path_to_save (optional): Path to save the Bing links. Defaults to
+          PATH_BING_LINKS.
+
+    Raises:
+        ValueError: If the links for one city are completely empty.
+    """
+    # read all city urls
+    city_urls = get_city_urls(path)
+
+    bing_links: list[str] = []
+    for city_u in city_urls:
+        # get the links
+        links = extract_bing_links_for_city(city_u)
+        # check whether links are empty
+        if not links:
+            raise ValueError(f"Emtpy links for city: {city_u}")
+
+        bing_links += links
+        time.sleep(1.2)
+
+    # save to file
+    with open(path_to_save, "w", encoding="utf-8") as file:
+        file.write("\n".join(bing_links))
+
+
+# TODO: write parser for these links to extract address, (lat, long) from them. use regex
 example_link = "https://www.bing.com/mapspreview?rtp=~pos.48.82852_10.11375_Lidl+-+Ulmer+Str.+150+73431+Aalen"
 
 
@@ -64,6 +138,9 @@ def main() -> None:
     """Runs the code."""
     # Save the city urls
     # extract_and_save_city_urls(FILIAL_SEARCH_URL)
+
+    # TODO: run the function below
+    # fetch_and_save_all_bing_links(PATH_LIDL_FILIALEN_URLS, PATH_BING_LINKS)
 
 
 if __name__ == "__main__":
