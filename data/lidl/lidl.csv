@@ -85,7 +85,7 @@ Beim Enggäßle 1,78050,Villingen-Schwenningen,48.05845,8.43625
 Infanteriestraße 3,92224,Amberg,49.44511,11.84305
 Barbarastr. 20,92224,Amberg,49.43414,11.87975
 Hirschauer Str. 2,92224,Amberg,49.46663,11.85208
-Donaustraße None,86165,Augsburg,48.37665,10.93098
+Donaustraße,86165,Augsburg,48.37665,10.93098
 Pearl.-S.-Buck-Straße 10,86157,Augsburg,48.37153,10.86692
 Reichenberger Straße 45,86161,Augsburg,48.36198,10.92014
 Eichleitnerstr. 10,86199,Augsburg,48.3465,10.88601
@@ -205,7 +205,7 @@ Heinrich-Heine-Str. 30,10179,Berlin-Mitte,52.50614,13.41252
 Brunnenstr. 87,13355,Berlin-Mitte,52.54428,13.3916
 Badstr. 60,13357,Berlin-Mitte,52.55108,13.38347
 Müllerstr. 48/48a,13349,Berlin-Mitte,52.55208,13.34952
-Donaustr.96 None,12043,Berlin-Neukölln,52.4808,13.43879
+Donaustr. 96,12043,Berlin-Neukölln,52.4808,13.43879
 Gutschmidtstr. 101,12359,Berlin-Neukölln,52.43913,13.43798
 Tempelhofer Weg 14,12347,Berlin-Neukölln,52.45804,13.42452
 Späthstr. 162,12359,Berlin-Neukölln,52.45287,13.45325
@@ -571,7 +571,7 @@ Mindener Str. 108,49084,Osnabrück,52.27138,8.08729
 Bolwinsweg 3-5,26871,Papenburg,53.07248,7.43948
 Karl-Hillers-Str. 10,26871,Papenburg,53.07866,7.38922
 Braunschweiger Str. 120,31226,Peine,52.30809,10.24906
-Daimlerstr.2 None,31228,Peine,52.33811,10.24114
+Daimlerstr. 2,31228,Peine,52.33811,10.24114
 An der Erzbahn 4,38259,Salzgitter,52.05085,10.37288
 Kurt-Schumacher-Ring 102,38228,Salzgitter,52.14397,10.2957
 Ludwig-Erhard-Str. 28,38226,Salzgitter,52.1678,10.3371
