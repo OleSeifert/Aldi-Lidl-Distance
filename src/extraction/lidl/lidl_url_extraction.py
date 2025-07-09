@@ -56,12 +56,12 @@ def extract_and_save_city_urls(
                 if a_tag and hasattr(a_tag, "get"):
                     href_content = a_tag.get("href")
                     if href_content:
-                        url = f"{BASE_URL}{str(href_content)}"
+                        full_url = f"{BASE_URL}{str(href_content)}"
                     else:
                         logging.warning(f"** No href found for div element: **\n{el}\n")
 
             # attach it to the file
-            file.write(f"{url}\n")
+            file.write(f"{full_url}\n")
         print("Successfully extracted and saved all city URLs.")
 
 
