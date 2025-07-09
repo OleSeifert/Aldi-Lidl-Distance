@@ -82,7 +82,7 @@ def extract_bing_links_for_city(city_url: str) -> list[str]:
     filtered_elems = [
         el
         for el in rel_elems
-        if hasattr(el, "href") and el["href"].startswith("https://www.bing")
+        if el.has_attr("href") and el["href"].startswith("https://www.bing")
     ]
     # get the links
     links: list[str] = [el["href"] for el in filtered_elems]
