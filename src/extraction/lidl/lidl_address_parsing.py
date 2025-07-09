@@ -65,7 +65,7 @@ def parse_bing_link(bing_link: str) -> dict[str, str]:
     if not matches:
         raise ValueError(f"No matches found for link: {bing_link}")
     return {
-        "Street": ul.unquote_plus(f"{matches['street']} {matches['number']}"),
+        "Street": ul.unquote_plus(f"{matches['street']} {matches['number'] or ''}"),
         "Postalcode": matches["postcode"],
         "City": ul.unquote_plus(matches["city"]).strip(),
         "Latitude": matches["lat"],
