@@ -3,6 +3,7 @@
 
 import logging
 import time
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,18 +14,23 @@ from tqdm import tqdm
 
 BASE_URL = "https://www.lidl.de"
 FILIAL_SEARCH_URL = f"{BASE_URL}/f/"
-PATH_LIDL_FILIALEN_URLS = "../../../data/raw/lidl/lidl_filialen_urls.txt"
-PATH_BING_LINKS = "../../../data/raw/lidl/lidl_bing_links.txt"
+PATH_LIDL_FILIALEN_URLS = Path("../../../data/raw/lidl/lidl_filialen_urls.txt")
+PATH_BING_LINKS = Path("../../../data/raw/lidl/lidl_bing_links.txt")
 
+HEADERS = {"User-Agent": "hobby-aldi-scraper/0.1"}
+session = requests.Session()
+session.headers.update(HEADERS)
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s: %(message)s",
 )
 
+# **************** Helper functions ****************
+
 
 def extract_and_save_city_urls(
-    url: str, path_to_save: str = PATH_LIDL_FILIALEN_URLS
+    url: str, path_to_save: Path = PATH_LIDL_FILIALEN_URLS
 ) -> None:
     """Extracts the city URLs for all cities and saves them to a file.
 
@@ -68,7 +74,7 @@ def extract_bing_links_for_city(city_url: str) -> list[str]:
     Returns:
         A list of Bing links for this city.
     """
-    res = requests.get(city_url, timeout=15)
+    res = session.get(city_url, timeout=15)
     soup = BeautifulSoup(res.text, "html.parser")
     # Get all relevant elements
     rel_elems = soup.find_all("a", class_="ret-o-store-detail__store-icon-link")
@@ -76,14 +82,14 @@ def extract_bing_links_for_city(city_url: str) -> list[str]:
     filtered_elems = [
         el
         for el in rel_elems
-        if hasattr(el, "href") and el["href".startswith("https://www.bing")]
+        if hasattr(el, "href") and el["href"].startswith("https://www.bing")
     ]
     # get the links
     links: list[str] = [el["href"] for el in filtered_elems]
     return links
 
 
-def get_city_urls(path: str = PATH_LIDL_FILIALEN_URLS) -> list[str]:
+def get_city_urls(path: Path = PATH_LIDL_FILIALEN_URLS) -> list[str]:
     """Reads the city URLs file.
 
     Args:
@@ -99,7 +105,7 @@ def get_city_urls(path: str = PATH_LIDL_FILIALEN_URLS) -> list[str]:
 
 
 def fetch_and_save_all_bing_links(
-    path: str = PATH_LIDL_FILIALEN_URLS, path_to_save: str = PATH_BING_LINKS
+    path: Path = PATH_LIDL_FILIALEN_URLS, path_to_save: Path = PATH_BING_LINKS
 ) -> None:
     """Fetches and saves all Bing links for all cities.
 
@@ -113,25 +119,23 @@ def fetch_and_save_all_bing_links(
     """
     # read all city urls
     city_urls = get_city_urls(path)
-
     bing_links: list[str] = []
-    for city_u in city_urls:
-        # get the links
-        links = extract_bing_links_for_city(city_u)
-        # check whether links are empty
-        if not links:
-            raise ValueError(f"Emtpy links for city: {city_u}")
 
-        bing_links += links
-        time.sleep(1.2)
-
-    # save to file
     with open(path_to_save, "w", encoding="utf-8") as file:
-        file.write("\n".join(bing_links))
+        for city_u in tqdm(city_urls, desc="processing cities"):
+            try:
+                links = extract_bing_links_for_city(city_u)
+                if not links:
+                    raise ValueError(f"Empty links for city: {city_u}")
+                bing_links += links
+                file.write("\n".join(links) + "\n")
+                file.flush()  # ensure data is written to disk immediately
+                time.sleep(1.2)
+            except Exception as e:
+                print(f"Error processing city {city_u}: {e}")
 
 
-# TODO: write parser for these links to extract address, (lat, long) from them. use regex
-example_link = "https://www.bing.com/mapspreview?rtp=~pos.48.82852_10.11375_Lidl+-+Ulmer+Str.+150+73431+Aalen"
+# **************** Main ****************
 
 
 def main() -> None:
@@ -139,8 +143,8 @@ def main() -> None:
     # Save the city urls
     # extract_and_save_city_urls(FILIAL_SEARCH_URL)
 
-    # TODO: run the function below
-    # fetch_and_save_all_bing_links(PATH_LIDL_FILIALEN_URLS, PATH_BING_LINKS)
+    # get all Bing links
+    fetch_and_save_all_bing_links(PATH_LIDL_FILIALEN_URLS, PATH_BING_LINKS)
 
 
 if __name__ == "__main__":
