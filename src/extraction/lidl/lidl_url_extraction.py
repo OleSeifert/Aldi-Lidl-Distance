@@ -40,7 +40,7 @@ def extract_and_save_city_urls(
           to PATH_LIDL_FILIALEN_URLS.
     """
     # fetch page
-    res = requests.get(FILIAL_SEARCH_URL, timeout=15)
+    res = requests.get(url, timeout=15)
     res.raise_for_status()
 
     # find all corresponding links
