@@ -2,6 +2,8 @@
 
 ![python version](https://img.shields.io/badge/python-3.12-blue)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+![Static Badge](https://img.shields.io/badge/Code_License-MIT-green)
+![Static Badge](https://img.shields.io/badge/Data_License-CC_BY--NC_4.0-lightgrey)
 
 A quick project to answer the question:
 
@@ -89,3 +91,8 @@ Run the command `uv sync`, and it should create a virtual environment with all d
 The code is licensed under the [MIT licence](./LICENSE).
 The gathered data on Aldi and Lidl addresses is compliant with their terms of service.
 Although it does not really "copyrightable", I licensed the data under the [CC BY 4.0 license](./LICENSE.data).
+
+[![CC BY-NC 4.0][cc-by-nc-image]][cc-by-nc]
+
+[cc-by-nc]: https://creativecommons.org/licenses/by-nc/4.0/
+[cc-by-nc-image]: https://licensebuttons.net/l/by-nc/4.0/88x31.png
